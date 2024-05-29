@@ -3,7 +3,9 @@ import TransactionFilters from "../components/TransactionFilters";
 import TransactionList from "../components/TransactionList";
 
 const Transactions = () => {
-  return <></>;
+  return {
+    TransactionFilters,
+  };
 };
 
 export default Transactions;
