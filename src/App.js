@@ -6,11 +6,9 @@ import Register from "./pages/Register";
 import { useEffect, useState } from "react";
 import { getToken } from "./api/storage";
 import UserContext from "./context/UserContext";
-import Transactions from "./pages/Transactions";
 
 function App() {
   const [user, setUser] = useState(false);
-
   useEffect(() => {
     if (getToken()) setUser(true);
   }, []);
@@ -21,7 +19,6 @@ function App() {
         <Routes>
           <Route path="/" Component={Home} />
           <Route path="/login" Component={Login} />
-          <Route path="/transactions" Component={Transactions} />
           <Route path="/register" Component={Register} />
         </Routes>
       </div>
