@@ -15,15 +15,16 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const { mutate } = useMutation({
+  const { mutate, isLoading } = useMutation({
     mutationKey: ["Login"],
     mutationFn: () => login(userInfo.username, userInfo.password),
     onSuccess: () => {
-      alert("Login successful!");
       setUser(true);
       navigate("/");
     },
   });
+
+  if (isLoading) return <h1>Okay wait a min!</h1>;
 
   const handleChange = (e) => {
     setUserInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }));

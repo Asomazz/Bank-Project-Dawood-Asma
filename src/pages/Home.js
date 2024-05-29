@@ -1,9 +1,16 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import bigPicture from "../Pics/file-oICBHWLtouaMtgy0jlLldtIo-ezgif.com-webp-to-jpg-converter.jpg";
 import logo from "../Pics/Collage_2024-05-29_00_55_17-removebg-preview.png";
+import { useContext } from "react";
+import UserContext from "../context/UserContext";
 
 const Home = () => {
+  const [user, setUser] = useContext(UserContext);
+  const logout = () => {
+    localStorage.removeItem("token");
+    setUser(false);
+  };
   return (
     <div
       style={{
@@ -40,9 +47,10 @@ const Home = () => {
           />
           <h1 style={{ color: "#233d4d", fontSize: "24px" }}>Dasma Bank</h1>
         </div>
-        <nav>
+        {user ? (
           <Link
-            to="/register"
+            onClick={logout}
+            to="/"
             style={{
               margin: "0 10px",
               padding: "10px 20px",
@@ -53,23 +61,40 @@ const Home = () => {
               fontSize: "14px",
             }}
           >
-            Register
+            Logout
           </Link>
-          <Link
-            to="/login"
-            style={{
-              margin: "0 10px",
-              padding: "10px 20px",
-              backgroundColor: "#619b8a",
-              color: "#f7f8fa",
-              borderRadius: "4px",
-              textDecoration: "none",
-              fontSize: "14px",
-            }}
-          >
-            Login
-          </Link>
-        </nav>
+        ) : (
+          <nav>
+            <Link
+              to="/register"
+              style={{
+                margin: "0 10px",
+                padding: "10px 20px",
+                backgroundColor: "#fe7f2d",
+                color: "#f7f8fa",
+                borderRadius: "4px",
+                textDecoration: "none",
+                fontSize: "14px",
+              }}
+            >
+              Register
+            </Link>
+            <Link
+              to="/login"
+              style={{
+                margin: "0 10px",
+                padding: "10px 20px",
+                backgroundColor: "#619b8a",
+                color: "#f7f8fa",
+                borderRadius: "4px",
+                textDecoration: "none",
+                fontSize: "14px",
+              }}
+            >
+              Login
+            </Link>
+          </nav>
+        )}
       </header>
 
       <main
