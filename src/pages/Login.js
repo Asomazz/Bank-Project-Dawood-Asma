@@ -1,10 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
-import { login } from "../api/auth";
+
 import { useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import UserContext from "../context/UserContext";
 import logo from "../Pics/Collage_2024-05-29_00_55_17-removebg-preview.png";
 import bigImage from "../Pics/file-oICBHWLtouaMtgy0jlLldtIo-ezgif.com-webp-to-jpg-converter.jpg";
+import { login } from "../api/auth";
 
 const Login = () => {
   const [userInfo, setUserInfo] = useState({
@@ -15,7 +16,7 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationKey: ["Login"],
     mutationFn: () => login(userInfo.username, userInfo.password),
     onSuccess: () => {
@@ -23,8 +24,6 @@ const Login = () => {
       navigate("/");
     },
   });
-
-  if (isLoading) return <h1>Okay wait a min!</h1>;
 
   const handleChange = (e) => {
     setUserInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -174,7 +173,9 @@ const Login = () => {
                   required
                 />
               </div>
-
+              {isPending && (
+                <span class="loading loading-ball loading-lg"></span>
+              )}
               <button
                 type="submit"
                 style={{

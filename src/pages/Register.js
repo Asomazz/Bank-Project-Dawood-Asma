@@ -23,7 +23,7 @@ const Register = () => {
     }
   };
 
-  const { mutate } = useMutation({
+  const { mutate, isLoading } = useMutation({
     mutationKey: ["register"],
     mutationFn: () => register(userInfo),
     onSuccess: () => {
@@ -35,6 +35,8 @@ const Register = () => {
       setUserInfo({ username: "", password: "", image: null });
     },
   });
+
+  if (isLoading) return <span class="loading loading-ball loading-lg"></span>;
 
   const handleFormSubmit = (e) => {
     e.preventDefault();

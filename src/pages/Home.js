@@ -8,6 +8,7 @@ import UserContext from "../context/UserContext";
 const Home = () => {
   const [user, setUser] = useContext(UserContext);
   const logout = () => {
+    alert("logininniinin");
     localStorage.removeItem("token");
     setUser(false);
   };
