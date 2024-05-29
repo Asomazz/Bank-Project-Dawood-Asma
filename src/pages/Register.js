@@ -7,7 +7,11 @@ import logo from "../Pics/Collage_2024-05-29_00_55_17-removebg-preview.png";
 import bigImage from "../Pics/file-oICBHWLtouaMtgy0jlLldtIo-ezgif.com-webp-to-jpg-converter.jpg";
 
 const Register = () => {
-  const [userInfo, setUserInfo] = useState({});
+  const [userInfo, setUserInfo] = useState({
+    username: "",
+    image: null,
+    password: "",
+  });
   const [user, setUser] = useContext(UserContext);
   const navigate = useNavigate();
 
@@ -24,7 +28,13 @@ const Register = () => {
     mutationFn: () => register(userInfo),
     onSuccess: () => {
       setUser(true);
-      navigate("/notes");
+      alert("Registration successful!");
+      setUserInfo({ username: "", password: "", image: null });
+      navigate("/");
+    },
+    onError: () => {
+      alert("Registration failed. Please try again.");
+      setUserInfo({ username: "", password: "", image: null });
     },
   });
 
@@ -136,6 +146,7 @@ const Register = () => {
                   type="text"
                   id="username"
                   name="username"
+                  value={userInfo.username}
                   onChange={handleChange}
                   style={{
                     width: "100%",
@@ -163,6 +174,7 @@ const Register = () => {
                   type="password"
                   id="password"
                   name="password"
+                  value={userInfo.password}
                   onChange={handleChange}
                   style={{
                     width: "100%",
@@ -205,13 +217,13 @@ const Register = () => {
               <button
                 type="submit"
                 style={{
-                  width: "524px",
-                  padding: "15px",
+                  width: "100%",
+                  padding: "10px",
                   backgroundColor: "#fe7f2d",
                   color: "#f7f8fa",
                   border: "none",
                   borderRadius: "4px",
-                  fontSize: "18px",
+                  fontSize: "14px",
                   cursor: "pointer",
                 }}
               >
