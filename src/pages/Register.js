@@ -28,12 +28,10 @@ const Register = () => {
     mutationFn: () => register(userInfo),
     onSuccess: () => {
       setUser(true);
-      alert("Registration successful!");
       setUserInfo({ username: "", password: "", image: null });
       navigate("/");
     },
     onError: () => {
-      alert("Registration failed. Please try again.");
       setUserInfo({ username: "", password: "", image: null });
     },
   });
