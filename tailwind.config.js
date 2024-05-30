@@ -88,6 +88,7 @@ module.exports = {
       },
       fontFamily: {
         audiowide: ["Audiowide", "sans-serif"],
+        lively: ["Poppins", "sans-serif"],
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

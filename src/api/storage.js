@@ -1,7 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 
 const storeToken = (token) => {
-  localStorage.setItem("token", token);
+  return localStorage.setItem("token", token);
 };
 
 const getToken = () => {
@@ -9,7 +9,7 @@ const getToken = () => {
 };
 
 const removeToken = () => {
-  localStorage.removeItem("token");
+  return localStorage.removeItem("token");
 };
 
 const checkToken = () => {

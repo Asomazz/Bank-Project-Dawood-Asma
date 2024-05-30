@@ -1,10 +1,9 @@
+import React, { useContext, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-
 import { useNavigate } from "react-router-dom";
-import { useContext, useState } from "react";
 import UserContext from "../context/UserContext";
 import logo from "../Pics/Collage_2024-05-29_00_55_17-removebg-preview.png";
-import bigImage from "../Pics/file-oICBHWLtouaMtgy0jlLldtIo-ezgif.com-webp-to-jpg-converter.jpg";
+import bigImage from "../Pics/LogoHome.png";
 import { login } from "../api/auth";
 
 const Login = () => {
@@ -13,7 +12,6 @@ const Login = () => {
     password: "",
   });
   const [user, setUser] = useContext(UserContext);
-
   const navigate = useNavigate();
 
   const { mutate, isPending } = useMutation({
@@ -21,12 +19,11 @@ const Login = () => {
     mutationFn: () => login(userInfo.username, userInfo.password),
     onSuccess: () => {
       setUser(true);
-      navigate("/");
+      navigate("/accountPage");
     },
   });
 
   const handleChange = (e) => {
-    setUserInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     setUserInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -34,165 +31,74 @@ const Login = () => {
     e.preventDefault();
     mutate();
   };
+
   return (
-    <div
-      style={{
-        fontFamily: "Quicksand, sans-serif",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        minHeight: "100vh",
-        backgroundColor: "#233d4d",
-        color: "#f7f8fa",
-        padding: "20px",
-      }}
-    >
-      <div
-        style={{
-          position: "absolute",
-          top: "20px",
-          left: "20px",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <img
-          src={logo}
-          alt="Logo"
-          style={{ height: "70px", marginRight: "10px" }}
-        />
-        <h1 style={{ color: "#f7f8fa", fontSize: "24px" }}>Dasma Bank</h1>
+    <div className="flex flex-col items-center min-h-screen bg-white text-orange-600 p-6 font-lively">
+      <div className="absolute top-5 left-5 flex items-center">
+        <img src={logo} alt="Logo" className="h-16 mr-3" />
+        <h1 className="text-2xl">Dasma Bank</h1>
       </div>
-      <div
-        style={{
-          display: "flex",
-          width: "100%",
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: "60px",
-        }}
-      >
-        <div
-          style={{
-            width: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+      <div className="flex flex-col md:flex-row w-full justify-center items-center mt-16">
+        <div className="w-full md:w-2/3 lg:w-1/2 flex justify-center items-center">
           <img
             src={bigImage}
             alt="Banking"
-            style={{ width: "85%", height: "auto" }}
+            className="w-3/4 md:w-full h-auto"
           />
         </div>
-        <div
-          style={{
-            width: "50%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "20px",
-          }}
-        >
-          <div
-            style={{
-              width: "100%",
-              maxWidth: "500px",
-              backgroundColor: "#f7f8fa",
-              borderRadius: "8px",
-              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-              padding: "40px",
-            }}
-          >
-            <h2
-              style={{
-                marginBottom: "10px",
-                color: "#233d4d",
-                fontSize: "24px",
-              }}
-            >
-              Login to your account
-            </h2>
-
-            <form onSubmit={handleFormSubmit}>
-              <div style={{ marginBottom: "20px" }}>
-                <label
-                  htmlFor="username"
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    color: "#233d4d",
-                  }}
-                >
-                  Username
-                </label>
-                <input
-                  type="text"
-                  id="username"
-                  name="username"
-                  value={userInfo.username}
-                  onChange={handleChange}
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    border: "1px solid #a1c181",
-                    borderRadius: "4px",
-                    fontSize: "14px",
-                    color: "#233d4d",
-                  }}
-                  required
-                />
-              </div>
-              <div style={{ marginBottom: "20px" }}>
-                <label
-                  htmlFor="password"
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    color: "#233d4d",
-                  }}
-                >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  value={userInfo.password}
-                  onChange={handleChange}
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    border: "1px solid #a1c181",
-                    borderRadius: "4px",
-                    fontSize: "14px",
-                    color: "#233d4d",
-                  }}
-                  required
-                />
-              </div>
-              {isPending && (
-                <span class="loading loading-ball loading-lg"></span>
-              )}
-              <button
-                type="submit"
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  backgroundColor: "#fe7f2d",
-                  color: "#f7f8fa",
-                  border: "none",
-                  borderRadius: "4px",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                }}
+        <div className="w-full md:w-1/2 flex flex-col items-center justify-center p-6">
+          <h2 className="text-3xl mb-5">Login to your account</h2>
+          <p className="mb-5">
+            If you don't have an account,{" "}
+            <a href="/register" className="text-green-600 underline">
+              register here
+            </a>
+          </p>
+          <form onSubmit={handleFormSubmit} className="w-full max-w-md">
+            <div className="mb-4">
+              <label htmlFor="username" className="block mb-2 text-orange-600">
+                Username
+              </label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                value={userInfo.username}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-orange-600 rounded-md focus:outline-none focus:border-orange-600"
+                required
+              />
+            </div>
+            <div className="mb-4 relative">
+              <label htmlFor="password" className="block mb-2 text-orange-600">
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={userInfo.password}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-orange-600 rounded-md focus:outline-none focus:border-orange-600"
+                required
+              />
+              <a
+                href="/register"
+                className="absolute right-0 top-2 text-blue-600"
               >
-                Login
-              </button>
-            </form>
-          </div>
+                Forgot password?
+              </a>
+            </div>
+            {isPending && (
+              <span className="loading loading-ball loading-lg"></span>
+            )}
+            <button
+              type="submit"
+              className="w-full py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none"
+            >
+              Login
+            </button>
+          </form>
         </div>
       </div>
     </div>

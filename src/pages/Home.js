@@ -1,96 +1,53 @@
-import React from "react";
-import { Link, NavLink } from "react-router-dom";
-import bigPicture from "../Pics/file-oICBHWLtouaMtgy0jlLldtIo-ezgif.com-webp-to-jpg-converter.jpg";
+import React, { useContext } from "react";
+import { Link } from "react-router-dom";
+import bigPicture from "../Pics/LogoHome.png";
 import logo from "../Pics/Collage_2024-05-29_00_55_17-removebg-preview.png";
-import { useContext } from "react";
 import UserContext from "../context/UserContext";
+import "tailwindcss/tailwind.css";
 
 const Home = () => {
   const [user, setUser] = useContext(UserContext);
+
   const logout = () => {
-    alert("logininniinin");
+    alert("Logging out...");
     localStorage.removeItem("token");
     setUser(false);
   };
+
   return (
-    <div
-      style={{
-        fontFamily: "Quicksand, sans-serif",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        backgroundColor: "#233d4d",
-        color: "#f7f8fa",
-        padding: "20px",
-      }}
-    >
-      <header
-        style={{
-          width: "100%",
-          maxWidth: "1200px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "20px",
-          backgroundColor: "#fcca46",
-          borderRadius: "8px",
-          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-          marginBottom: "20px",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <img
-            src={logo}
-            alt="Logo"
-            style={{ height: "70px", marginRight: "10px" }}
-          />
-          <h1 style={{ color: "#233d4d", fontSize: "24px" }}>Dasma Bank</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-white text-orange-600 p-6 font-lively">
+      <header className="w-full max-w-5xl flex justify-between items-center p-5 mb-5">
+        <div className="flex items-center">
+          <img src={logo} alt="Logo" className="h-16 mr-3" />
+          <h1 className="text-2xl">Dasma Bank</h1>
         </div>
         {user ? (
-          <Link
-            onClick={logout}
-            to="/"
-            style={{
-              margin: "0 10px",
-              padding: "10px 20px",
-              backgroundColor: "#fe7f2d",
-              color: "#f7f8fa",
-              borderRadius: "4px",
-              textDecoration: "none",
-              fontSize: "14px",
-            }}
-          >
-            Logout
-          </Link>
+          <div className="flex items-center">
+            <Link
+              to="/profilePage"
+              className="mx-2 px-4 py-2 bg-green-600 text-white rounded-lg text-sm"
+            >
+              Visit Profile
+            </Link>
+            <Link
+              onClick={logout}
+              to="/"
+              className="mx-2 px-4 py-2 bg-orange-600 text-white rounded-lg text-sm"
+            >
+              Logout
+            </Link>
+          </div>
         ) : (
           <nav>
             <Link
               to="/register"
-              style={{
-                margin: "0 10px",
-                padding: "10px 20px",
-                backgroundColor: "#fe7f2d",
-                color: "#f7f8fa",
-                borderRadius: "4px",
-                textDecoration: "none",
-                fontSize: "14px",
-              }}
+              className="mx-2 px-4 py-2 bg-orange-600 text-white rounded-lg text-sm"
             >
               Register
             </Link>
             <Link
               to="/login"
-              style={{
-                margin: "0 10px",
-                padding: "10px 20px",
-                backgroundColor: "#619b8a",
-                color: "#f7f8fa",
-                borderRadius: "4px",
-                textDecoration: "none",
-                fontSize: "14px",
-              }}
+              className="mx-2 px-4 py-2 bg-green-600 text-white rounded-lg text-sm"
             >
               Login
             </Link>
@@ -98,122 +55,39 @@ const Home = () => {
         )}
       </header>
 
-      <main
-        style={{
-          width: "100%",
-          maxWidth: "1200px",
-          textAlign: "center",
-        }}
-      >
-        <h2
-          style={{ color: "#f7f8fa", fontSize: "32px", marginBottom: "20px" }}
-        >
-          Welcome to Dasma Bank
-        </h2>
-        <p style={{ color: "#f7f8fa", fontSize: "18px", marginBottom: "20px" }}>
+      <main className="w-full max-w-5xl text-center">
+        <h2 className="text-4xl mb-5">Welcome to Dasma Bank</h2>
+        <p className="text-lg mb-5">
           Manage your finances easily and securely with our online banking
           services.
         </p>
-        <div style={{ position: "relative", marginBottom: "20px" }}>
+        <div className="relative mb-5">
           <img
             src={bigPicture}
             alt="Banking"
-            style={{
-              width: "100%",
-              height: "auto",
-              borderRadius: "8px",
-              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-            }}
+            className="w-full h-auto rounded-lg"
           />
         </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-around",
-            marginBottom: "20px",
-          }}
-        >
-          <div
-            style={{
-              width: "30%",
-              backgroundColor: "#a1c181",
-              padding: "20px",
-              borderRadius: "8px",
-              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <h3
-              style={{
-                color: "#233d4d",
-                fontSize: "24px",
-                marginBottom: "10px",
-              }}
-            >
-              Easy Transfers
-            </h3>
-            <p style={{ color: "#233d4d" }}>
+        <div className="flex justify-around mb-5">
+          <div className="w-1/3 bg-green-400 p-5 rounded-lg shadow-md">
+            <h3 className="text-2xl mb-3 text-white">Easy Transfers</h3>
+            <p className="text-white">
               Send money to anyone, anywhere, with just a few clicks.
             </p>
           </div>
-          <div
-            style={{
-              width: "30%",
-              backgroundColor: "#fe7f2d",
-              padding: "20px",
-              borderRadius: "8px",
-              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <h3
-              style={{
-                color: "#233d4d",
-                fontSize: "24px",
-                marginBottom: "10px",
-              }}
-            >
-              Secure Savings
-            </h3>
-            <p style={{ color: "#f7f8fa" }}>
+          <div className="w-1/3 bg-orange-600 p-5 rounded-lg shadow-md">
+            <h3 className="text-2xl mb-3 text-white">Secure Savings</h3>
+            <p className="text-white">
               Your money is safe with our top-notch security features.
             </p>
           </div>
-          <div
-            style={{
-              width: "30%",
-              backgroundColor: "#619b8a",
-              padding: "20px",
-              borderRadius: "8px",
-              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <h3
-              style={{
-                color: "#233d4d",
-                fontSize: "24px",
-                marginBottom: "10px",
-              }}
-            >
-              24/7 Support
-            </h3>
-            <p style={{ color: "#f7f8fa" }}>
+          <div className="w-1/3 bg-green-600 p-5 rounded-lg shadow-md">
+            <h3 className="text-2xl mb-3 text-white">24/7 Support</h3>
+            <p className="text-white">
               We're here to help you any time, any day.
             </p>
           </div>
         </div>
-        <Link
-          to="/register"
-          style={{
-            display: "inline-block",
-            padding: "10px 20px",
-            backgroundColor: "#fe7f2d",
-            color: "#f7f8fa",
-            borderRadius: "4px",
-            textDecoration: "none",
-            marginTop: "20px",
-          }}
-        >
-          Get Started
-        </Link>
       </main>
     </div>
   );
