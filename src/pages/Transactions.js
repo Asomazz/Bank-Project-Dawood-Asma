@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { getAllTransactions } from "../api/auth";
-import TransactionItem from "../components/TransactionItem";
 import { useQuery } from "@tanstack/react-query";
 import DatePicker from "react-datepicker";
 import { useTranslation } from "react-i18next";
@@ -27,7 +26,7 @@ const Transactions = () => {
   const [toDate, setToDate] = useState(
     queryParams.get("toDate") ? new Date(queryParams.get("toDate")) : null
   );
-  const [searchClicked, setSearchClicked] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(query);
 
   const { data: transactions } = useQuery({
     queryKey: ["transactions"],
@@ -44,7 +43,10 @@ const Transactions = () => {
   }, [query, filterType, fromDate, toDate, navigate]);
 
   const handleSearch = (event) => {
-    setQuery(event.target.value);
+    setSearchQuery(event.target.value);
+    if (event.target.value === "") {
+      setQuery("");
+    }
   };
 
   const handleFilterChange = (event) => {
@@ -60,13 +62,13 @@ const Transactions = () => {
   };
 
   const handleSearchClick = () => {
-    setSearchClicked(true);
+    setQuery(searchQuery);
     toast.info(t("search"));
   };
 
   const queryTransactions = transactions?.filter((transaction) => {
-    if (query) return transaction.amount == query;
-    return transactions;
+    if (!query) return true;
+    return transaction.amount == query;
   });
 
   const filteredTransactions = queryTransactions?.filter((transaction) => {
@@ -84,9 +86,36 @@ const Transactions = () => {
     );
   });
 
-  const transactionList = datedTransactions?.map((transaction) => {
-    return <TransactionItem transaction={transaction} key={transaction.id} />;
-  });
+  const formatDate = (dateString) => {
+    const options = { year: "numeric", month: "2-digit", day: "2-digit" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const transactionList = datedTransactions?.map((transaction) => (
+    <div
+      key={transaction.id}
+      className="bg-white shadow-md rounded-md p-4 mb-4 border-l-4 border-orange-600"
+    >
+      <div className="flex justify-between items-center">
+        <span
+          className={`text-lg font-bold ${
+            transaction.type === "deposit"
+              ? "text-green-600"
+              : transaction.type === "withdraw"
+              ? "text-red-600"
+              : "text-gray-600"
+          }`}
+        >
+          {transaction.amount > 0 ? "+" : ""}
+          {transaction.amount}
+        </span>
+        <span className="text-gray-600">
+          {formatDate(transaction.createdAt)}
+        </span>
+        <span className="text-gray-600 capitalize">{transaction.type}</span>
+      </div>
+    </div>
+  ));
 
   return (
     <div className="flex flex-col min-h-screen bg-white text-gray-700 font-lively">
@@ -94,25 +123,23 @@ const Transactions = () => {
       <main className="flex flex-col items-center justify-center flex-grow">
         <div className="bg-white shadow-md rounded-md p-8 m-4 w-full max-w-4xl">
           <div className="flex flex-col space-y-4">
-            {" "}
             <div className="relative flex gap-2">
-              {" "}
               <input
                 type="search"
                 className="form-input rounded w-full px-4 py-2 border border-gray-300"
                 placeholder={t("enterAmount")}
-                value={query}
+                value={searchQuery}
                 onChange={handleSearch}
-              />{" "}
+              />
               <button
                 onClick={handleSearchClick}
                 className={` w-40 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none ${
-                  !query ? "opacity-50 cursor-not-allowed" : ""
+                  !searchQuery ? "opacity-50 cursor-not-allowed" : ""
                 }`}
               >
-                Search{" "}
-              </button>{" "}
-            </div>{" "}
+                {t("search")}
+              </button>
+            </div>
             <div className="flex space-x-4 items-center">
               <span className="text-gray-700">{t("filter")}</span>
               <label className="flex items-center">
@@ -189,29 +216,16 @@ const Transactions = () => {
                   />
                 </div>
               </div>
-            )}{" "}
-            <div className="mt-4"></div>{" "}
-          </div>{" "}
-          <table className="w-full mt-6 border-collapse">
-            <thead>
-              <tr className="text-left border-b">
-                <th className="px-4 py-2">{t("amount")}</th>
-                <th className="px-4 py-2">{t("date")}</th>
-                <th className="px-4 py-2">{t("type")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {transactionList && transactionList.length > 0 ? (
-                transactionList
-              ) : (
-                <tr>
-                  <td colSpan="3" className="text-center py-4">
-                    {t("noTransactions")}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+            )}
+            <div className="mt-4"></div>
+          </div>
+          <div className="mt-6">
+            {transactionList && transactionList.length > 0 ? (
+              transactionList
+            ) : (
+              <div className="text-center py-4">{t("noTransactions")}</div>
+            )}
+          </div>
         </div>
       </main>
       <footer className="bg-white shadow-md py-4">

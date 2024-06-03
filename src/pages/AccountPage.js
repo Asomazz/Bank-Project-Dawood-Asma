@@ -13,6 +13,7 @@ const AccountPage = () => {
   const [balance, setBalance] = useState(0);
   const [isDeposit, setIsDeposit] = useState(true);
   const [amount, setAmount] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchBalance = async () => {
@@ -34,12 +35,15 @@ const AccountPage = () => {
       return;
     }
 
+    setIsSubmitting(true);
+
     let data;
     if (!isDeposit) {
       if (balance >= transactionAmount) {
         data = await withdraw(transactionAmount, user);
       } else {
         toast.error(t("insufficientBalance"));
+        setIsSubmitting(false);
         return;
       }
     } else {
@@ -55,6 +59,7 @@ const AccountPage = () => {
     }
 
     setAmount("");
+    setIsSubmitting(false);
   };
 
   return (
@@ -123,20 +128,39 @@ const AccountPage = () => {
               </span>
             )}
           </div>
-          {!isDeposit && !(balance > amount) ? (
-            <button className="w-full py-2 bg-gray-400 text-white rounded-md focus:outline-none cursor-not-allowed">
-              Submit
-            </button>
-          ) : (
-            <button
-              onClick={handleTransaction}
-              className={`w-full py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none ${
-                !(amount > 0) ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-            >
-              Submit
-            </button>
-          )}
+          <button
+            onClick={handleTransaction}
+            className={`w-full py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none flex items-center justify-center ${
+              !(amount > 0) ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={isSubmitting || !(amount > 0)}
+          >
+            {isSubmitting ? (
+              <>
+                <svg
+                  className="animate-spin h-5 w-5 mr-3 text-white"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8H4zm2 5.292A7.962 7.962 0 014 12h2c0 1.105.289 2.145.812 3.071l-1.562 2.221z"
+                  ></path>
+                </svg>
+                Processing...
+              </>
+            ) : (
+              "Submit"
+            )}
+          </button>
         </div>
       </main>
       <footer className="bg-white shadow-md py-4">

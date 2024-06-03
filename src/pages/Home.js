@@ -28,11 +28,11 @@ const Home = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white text-orange-600 p-6 font-lively">
-      <header className="w-full max-w-5xl flex justify-between items-center p-5 mb-5">
+    <div className="flex flex-col items-center justify-between min-h-screen bg-white text-orange-600 font-lively">
+      <header className="w-full max-w-5xl flex justify-between items-center p-5">
         <div className="flex items-center">
           <img src={logo} alt="Logo" className="h-16 mr-3" />
-          <h1 className="text-2xl">{t("title")}</h1>
+          <h1 className="text-3xl">{t("title")}</h1>
         </div>
         <div className="flex items-center space-x-2">
           {user ? (
@@ -85,26 +85,26 @@ const Home = () => {
         </div>
       </header>
 
-      <main className="w-full max-w-5xl text-center">
-        <h2 className="text-4xl mb-5">{t("welcomeMessage")}</h2>
-        <p className="text-lg mb-5">{t("description")}</p>
-        <div className="relative mb-5">
+      <main className="w-full max-w-5xl text-center flex-grow flex flex-col justify-center items-center">
+        <h2 className="text-5xl mb-5">{t("welcomeMessage")}</h2>
+        <p className="text-2xl mb-5">{t("description")}</p>
+        <div className="relative mb-5 w-full max-w-4xl">
           <img
             src={bigPicture}
             alt="Banking"
-            className="w-full h-auto rounded-lg"
+            className="w-full max-h-80 object-contain mx-auto rounded-lg"
           />
         </div>
-        <div className="flex justify-around mb-5 space-x-4">
-          <div className="w-1/3 bg-green-400 p-5 rounded-lg shadow-md">
+        <div className="flex justify-around mb-5 space-x-4 w-full">
+          <div className="w-1/3 bg-green-400 p-6 rounded-lg shadow-md">
             <h3 className="text-2xl mb-3 text-white">{t("easyTransfers")}</h3>
             <p className="text-white">{t("easyTransfersDesc")}</p>
           </div>
-          <div className="w-1/3 bg-orange-600 p-5 rounded-lg shadow-md">
+          <div className="w-1/3 bg-orange-600 p-6 rounded-lg shadow-md">
             <h3 className="text-2xl mb-3 text-white">{t("secureSavings")}</h3>
             <p className="text-white">{t("secureSavingsDesc")}</p>
           </div>
-          <div className="w-1/3 bg-green-600 p-5 rounded-lg shadow-md">
+          <div className="w-1/3 bg-green-600 p-6 rounded-lg shadow-md">
             <h3 className="text-2xl mb-3 text-white">{t("support")}</h3>
             <p className="text-white">{t("supportDesc")}</p>
           </div>
