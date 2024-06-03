@@ -1,20 +1,29 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import UserContext from "../context/UserContext";
 import { getAllUsers, transfer, getProfile } from "../api/auth";
-import logo from "../Pics/Collage_2024-05-29_00_55_17-removebg-preview.png";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { ToastContainer, toast } from "react-toastify";
+import logo from "../Pics/Collage_2024-05-29_00_55_17-removebg-preview.png";
+import "react-toastify/dist/ReactToastify.css";
 
 const UsersPage = () => {
+  const { t } = useTranslation();
   const [user, setUser] = useContext(UserContext);
   const [query, setQuery] = useState("");
-  const [transferAmount, setTransferAmount] = useState("");
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchClicked, setSearchClicked] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [transferAmount, setTransferAmount] = useState(
+    searchParams.get("amount") || ""
+  );
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState("false");
 
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const {
     data: users,
@@ -33,16 +42,34 @@ const UsersPage = () => {
   const transferMutation = useMutation({
     mutationFn: ({ amount, username }) => transfer(amount, username, user),
     onSuccess: async () => {
-      alert("Transfer successful");
-      setTransferAmount("");
-      setSelectedUser(null);
-      setIsModalOpen(false);
+      toast.success(t("transferSuccessful"));
       const updatedUser = await getProfile(user);
       setUser(updatedUser);
+      const recipientUser = users.find(
+        (u) => u.username === selectedUser.username
+      );
+      if (recipientUser) {
+        toast.info(
+          `${t("newBalanceFor")} ${selectedUser.username}: ${
+            recipientUser.balance + parseFloat(transferAmount)
+          } BTC`
+        );
+      }
+      toast.info(
+        `${t("newBalanceFor")} ${user.username}: ${updatedUser.balance} BTC`
+      );
+      setTransferAmount("");
+      setSelectedUser(null);
+      setSearchParams({
+        username: searchParams.get("username"),
+        amount: searchParams.get("amount"),
+        modal: false,
+      });
+      setIsModalOpen("false");
       refetch();
     },
     onError: (error) => {
-      alert(error.response?.data?.message || "Transfer failed");
+      toast.error(error.response?.data?.message || t("transferFailed"));
     },
   });
 
@@ -58,7 +85,7 @@ const UsersPage = () => {
         username: selectedUser.username,
       });
     } else {
-      alert("Please enter a valid amount.");
+      toast.error(t("pleaseEnterValidAmount"));
     }
   };
 
@@ -68,7 +95,50 @@ const UsersPage = () => {
         setUser(updatedUser);
       });
     }
+
+    if (searchParams.get("modal")) {
+      setIsModalOpen(searchParams.get("modal"));
+    }
   }, []);
+
+  useEffect(() => {
+    const username = searchParams.get("username");
+    const amount = searchParams.get("amount");
+
+    if (username && users) {
+      const userToSelect = users.find((u) => u.username === username);
+      if (userToSelect) {
+        setSelectedUser(userToSelect);
+        setTransferAmount(amount || "");
+        setSearchParams({
+          username: searchParams.get("username"),
+          amount: searchParams.get("amount"),
+          modal: searchParams.get("modal"),
+        });
+      }
+    }
+  }, [searchParams, users]);
+
+  const handleUserClick = (user) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+    setSearchParams({
+      username: user.username,
+      amount: "",
+      modal: true,
+    });
+  };
+
+  const closeModal = (e) => {
+    setSearchParams({
+      username: searchParams.get("username"),
+      amount: searchParams.get("amount"),
+      modal: false,
+    });
+    setSelectedUser(null);
+    setTransferAmount("");
+    setSearchParams({});
+  };
 
   const queryUsers = users?.filter((user) =>
     user.username?.toLowerCase().includes(query)
@@ -82,7 +152,7 @@ const UsersPage = () => {
     return <span class="loading loading-spinner loading-md"></span>;
 
   return (
-    <div className="flex flex-col min-h-screen bg-white text-gray-700">
+    <div className="flex flex-col min-h-screen bg-white text-gray-700 font-lively">
       <Navbar />
       <main className="flex flex-col items-center justify-center flex-grow p-6">
         <div className="bg-white shadow-md rounded-md p-8 m-4 w-full max-w-5xl text-center">
@@ -143,22 +213,29 @@ const UsersPage = () => {
             })}
           </div>
         </div>
-        {isModalOpen && (
+        {isModalOpen != "false" && (
           <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
             <div className="bg-white shadow-md rounded-md p-8 m-4 w-full max-w-md text-center border-2 border-orange-600">
               <h3 className="text-xl mb-4 text-orange-600">
-                Transfer to {selectedUser.username}
+                {t("transferTo")} {searchParams.get("username")}
               </h3>
               <p className="mb-4">
-                Your Balance: {user.balance}{" "}
+                {t("yourBalance")}: {user.balance}{" "}
                 <span className="text-orange-600">BTC</span>
               </p>
               <input
                 type="text"
                 value={transferAmount}
-                onChange={(e) => setTransferAmount(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 mb-4"
-                placeholder="Amount"
+                onChange={(e) => {
+                  setTransferAmount(e.target.value);
+                  setSearchParams({
+                    username: searchParams.get("username"),
+                    amount: e.target.value,
+                    modal: true,
+                  });
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 mb-4 text-orange-600"
+                placeholder={t("amount")}
                 style={{ appearance: "none" }}
               />
               {!transferAmount && (
@@ -173,13 +250,13 @@ const UsersPage = () => {
                   !transferAmount ? "opacity-50 cursor-not-allowed" : ""
                 }`}
               >
-                Transfer
+                {t("transfer")}
               </button>
               <button
-                onClick={() => setIsModalOpen(false)}
+                onClick={closeModal}
                 className="mt-2 w-full py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none"
               >
-                Cancel
+                {t("cancel")}
               </button>
             </div>
           </div>
@@ -190,26 +267,27 @@ const UsersPage = () => {
           <img src={logo} alt="Logo" className="h-8 w-auto" />
           <div className="flex space-x-4">
             <Link to="/about" className="text-gray-700 hover:text-orange-600">
-              About
+              {t("about")}
             </Link>
             <a href="/privacy" className="text-gray-700 hover:text-orange-600">
-              Privacy Policy
+              {t("privacyPolicy")}
             </a>
             <a
               href="/licensing"
               className="text-gray-700 hover:text-orange-600"
             >
-              Licensing
+              {t("licensing")}
             </a>
             <a href="/contact" className="text-gray-700 hover:text-orange-600">
-              Contact
+              {t("contact")}
             </a>
           </div>
         </div>
         <div className="text-center text-gray-500 text-sm mt-2">
-          © 2024 CODED™. All Rights Reserved.
+          {t("allRightsReserved")}
         </div>
       </footer>
+      <ToastContainer />
     </div>
   );
 };

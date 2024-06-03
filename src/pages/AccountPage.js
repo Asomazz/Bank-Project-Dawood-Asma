@@ -2,9 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import UserContext from "../context/UserContext";
 import { deposit, withdraw, getProfile } from "../api/auth";
+import { useTranslation } from "react-i18next";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import logo from "../Pics/Collage_2024-05-29_00_55_17-removebg-preview.png";
 
 const AccountPage = () => {
+  const { t } = useTranslation();
   const [user, setUser] = useContext(UserContext);
   const [balance, setBalance] = useState(0);
   const [isDeposit, setIsDeposit] = useState(true);
@@ -26,7 +30,7 @@ const AccountPage = () => {
     const transactionAmount = parseFloat(amount);
 
     if (isNaN(transactionAmount) || transactionAmount <= 0) {
-      alert("Please enter a valid amount.");
+      toast.error(t("pleaseEnterValidAmount"));
       return;
     }
 
@@ -35,7 +39,7 @@ const AccountPage = () => {
       if (balance >= transactionAmount) {
         data = await withdraw(transactionAmount, user);
       } else {
-        alert("Insufficient balance.");
+        toast.error(t("insufficientBalance"));
         return;
       }
     } else {
@@ -43,7 +47,7 @@ const AccountPage = () => {
     }
 
     if (data.message === "User not logged in") {
-      alert(data.message);
+      toast.error(data.message);
     } else {
       const updatedUser = await getProfile(user);
       setUser(updatedUser);
@@ -54,11 +58,11 @@ const AccountPage = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-white text-gray-700">
+    <div className="flex flex-col min-h-screen bg-white text-gray-700 font-lively">
       <Navbar />
       <main className="flex flex-col items-center justify-center flex-grow">
         <div className="bg-white shadow-md rounded-md p-8 m-4 w-80 text-center">
-          <h2 className="text-2xl mb-4">Your Available Crypto :</h2>
+          <h2 className="text-2xl mb-4">{t("yourCrypto")}</h2>
           <p className="text-4xl text-orange-600">{balance} BTC</p>
         </div>
         <div className="bg-white shadow-md rounded-md p-8 m-4 w-80 text-center">
@@ -68,7 +72,7 @@ const AccountPage = () => {
                 isDeposit ? "text-orange-600" : "text-gray-500"
               } mr-2`}
             >
-              Deposit
+              {t("deposit")}
             </span>
             <label className="inline-flex relative items-center cursor-pointer">
               <input
@@ -85,7 +89,7 @@ const AccountPage = () => {
                 !isDeposit ? "text-orange-600" : "text-gray-500"
               } ml-2`}
             >
-              Withdraw
+              {t("withdraw")}
             </span>
           </div>
           <div className="mb-4">
@@ -140,26 +144,27 @@ const AccountPage = () => {
           <img src={logo} alt="Logo" className="h-8 w-auto" />
           <div className="flex space-x-4">
             <a href="/about" className="text-gray-700 hover:text-orange-600">
-              About
+              {t("about")}
             </a>
             <a href="/privacy" className="text-gray-700 hover:text-orange-600">
-              Privacy Policy
+              {t("privacyPolicy")}
             </a>
             <a
               href="/licensing"
               className="text-gray-700 hover:text-orange-600"
             >
-              Licensing
+              {t("licensing")}
             </a>
             <a href="/contact" className="text-gray-700 hover:text-orange-600">
-              Contact
+              {t("contact")}
             </a>
           </div>
         </div>
         <div className="text-center text-gray-500 text-sm mt-2">
-          © 2024 CODED™. All Rights Reserved.
+          {t("allRightsReserved")}
         </div>
       </footer>
+      <ToastContainer />
     </div>
   );
 };
