@@ -8,15 +8,26 @@ import { Link } from "react-router-dom";
 
 const UsersPage = () => {
   const [user, setUser] = useContext(UserContext);
+  const [query, setQuery] = useState("");
   const [transferAmount, setTransferAmount] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchClicked, setSearchClicked] = useState(false);
 
   const queryClient = useQueryClient();
 
-  const { data: users, refetch } = useQuery({
+  const {
+    data: users,
+    refetch,
+    isLoading,
+  } = useQuery({
     queryKey: ["users"],
     queryFn: () => getAllUsers(user),
+  });
+
+  const { data, isPending } = useQuery({
+    queryKey: ["user"],
+    queryFn: () => getProfile(user),
   });
 
   const transferMutation = useMutation({
@@ -35,8 +46,13 @@ const UsersPage = () => {
     },
   });
 
+  const handleSearch = (event) => {
+    setQuery(event.target.value.toLowerCase());
+  };
+
   const handleTransfer = () => {
     if (selectedUser && transferAmount > 0) {
+      // transferMutation.isPending;
       transferMutation.mutate({
         amount: transferAmount,
         username: selectedUser.username,
@@ -52,46 +68,79 @@ const UsersPage = () => {
         setUser(updatedUser);
       });
     }
-  }, [user]);
+  }, []);
+
+  const queryUsers = users?.filter((user) =>
+    user.username?.toLowerCase().includes(query)
+  );
+
+  const handleSearchClick = () => {
+    setSearchClicked(true);
+  };
+
+  if (isPending || isLoading)
+    return <span class="loading loading-spinner loading-md"></span>;
 
   return (
     <div className="flex flex-col min-h-screen bg-white text-gray-700">
       <Navbar />
       <main className="flex flex-col items-center justify-center flex-grow p-6">
         <div className="bg-white shadow-md rounded-md p-8 m-4 w-full max-w-5xl text-center">
+          <div className="relative flex gap-2">
+            <input
+              type="search"
+              className="form-input rounded w-full px-4 py-2 border border-gray-300"
+              placeholder="Enter a username or balance"
+              onChange={handleSearch}
+            />
+            <button
+              onClick={handleSearchClick}
+              className={` w-40 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none ${
+                !query ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              Search
+            </button>
+          </div>
+
           <h2 className="text-3xl mb-5">Users</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {users?.map((user) => (
-              <div
-                key={user.id}
-                className="bg-white shadow-md rounded-md p-6 text-center border-2 border-orange-600"
-              >
-                <img
-                  src={
-                    "https://react-bank-project.eapi.joincoded.com/" +
-                    user.image
-                  }
-                  alt="User"
-                  className="w-24 h-24 rounded-full mx-auto mb-4"
-                />
-                <h3 className="text-xl font-semibold mb-2 text-orange-600">
-                  {user.username}
-                </h3>
-                <p className="text-lg text-gray-600">
-                  Balance: {user.balance}{" "}
-                  <span className="text-orange-600">BTC</span>
-                </p>
-                <button
-                  onClick={() => {
-                    setSelectedUser(user);
-                    setIsModalOpen(true);
-                  }}
-                  className="mt-4 px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none"
+            {queryUsers?.map((user) => {
+              console.log(data);
+              return (
+                <div
+                  key={user.id}
+                  className={`bg-white shadow-md rounded-md p-6 text-center border-2 border-orange-600 `}
                 >
-                  Transfer
-                </button>
-              </div>
-            ))}
+                  <img
+                    src={
+                      "https://react-bank-project.eapi.joincoded.com/" +
+                      user.image
+                    }
+                    alt="User"
+                    className="w-24 h-24 rounded-full mx-auto mb-4"
+                  />
+                  <h3 className="text-xl font-semibold mb-2 text-orange-600">
+                    {user.username}
+                  </h3>
+                  <p className="text-lg text-gray-600">
+                    Balance: {user.balance}{" "}
+                    <span className="text-orange-600">BTC</span>
+                  </p>
+                  {user.username != data.username && (
+                    <button
+                      onClick={() => {
+                        setSelectedUser(user);
+                        setIsModalOpen(true);
+                      }}
+                      className="mt-4 px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none"
+                    >
+                      Transfer
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
         {isModalOpen && (
@@ -112,9 +161,17 @@ const UsersPage = () => {
                 placeholder="Amount"
                 style={{ appearance: "none" }}
               />
+              {!transferAmount && (
+                <span className="text-xs text-red-500 mt-2 flex justify-start ">
+                  Please enter a valid amount
+                </span>
+              )}
+              <br></br>
               <button
                 onClick={handleTransfer}
-                className="w-full py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none"
+                className={`w-full py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none ${
+                  !transferAmount ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
                 Transfer
               </button>
@@ -158,3 +215,48 @@ const UsersPage = () => {
 };
 
 export default UsersPage;
+
+// <div>
+// {queryUsers && queryUsers.length > 0 ? (
+//   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+//     {users?.map((user) => (
+//       // if (user.username==data.username) {
+//       //   //return the user item but faded
+//       // }
+//       <div
+//         key={user.id}
+//         className="bg-white shadow-md rounded-md p-6 text-center border-2 border-orange-600"
+//       >
+//         <img
+//           src={
+//             "https://react-bank-project.eapi.joincoded.com/" +
+//             user.image
+//           }
+//           alt="User"
+//           className="w-24 h-24 rounded-full mx-auto mb-4"
+//         />
+//         <h3 className="text-xl font-semibold mb-2 text-orange-600">
+//           {user.username}
+//         </h3>
+//         <p className="text-lg text-gray-600">
+//           Balance: {user.balance}{" "}
+//           <span className="text-orange-600">BTC</span>
+//         </p>
+//         <button
+//           onClick={() => {
+//             setSelectedUser(user);
+//             setIsModalOpen(true);
+//           }}
+//           className="mt-4 px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none"
+//         >
+//           Transfer
+//         </button>
+//       </div>
+//     ))}
+//   </div>
+// ) : (
+//   <span colSpan="3" className="text-center py-4">
+//     No users found.
+//   </span>
+// )}
+// </div>

@@ -30,6 +30,7 @@ const ProfilePage = () => {
       const updatedUser = await updateProfile(formData, user);
       setUser(updatedUser);
       setProfile(updatedUser);
+      setProfileImage(null);
     }
   };
 
@@ -66,7 +67,9 @@ const ProfilePage = () => {
           </div>
           <button
             onClick={handleSave}
-            className="mt-4 w-full py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none"
+            className={`mt-4 w-full py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none ${
+              !profileImage ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
             Save
           </button>

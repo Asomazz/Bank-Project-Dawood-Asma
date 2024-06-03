@@ -40,7 +40,8 @@ const Transactions = () => {
   };
 
   const queryTransactions = transactions?.filter((transaction) => {
-    return transaction.amount.toString().includes(query);
+    if (query) return transaction.amount == query;
+    return transactions;
   });
 
   const filteredTransactions = queryTransactions?.filter((transaction) => {
@@ -71,7 +72,7 @@ const Transactions = () => {
           {" "}
           <div className="flex flex-col space-y-4">
             {" "}
-            <div className="relative">
+            <div className="relative flex gap-2">
               {" "}
               <input
                 type="search"
@@ -79,6 +80,14 @@ const Transactions = () => {
                 placeholder="Enter an amount"
                 onChange={handleSearch}
               />{" "}
+              <button
+                onClick={handleSearchClick}
+                className={` w-40 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none ${
+                  !query ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                Search{" "}
+              </button>{" "}
             </div>{" "}
             <div className="flex space-x-4 items-center">
               <span className="text-gray-700">Filter:</span>{" "}
@@ -165,15 +174,7 @@ const Transactions = () => {
                 </div>{" "}
               </div>
             )}{" "}
-            <div className="mt-4">
-              {" "}
-              <button
-                onClick={handleSearchClick}
-                className="w-full py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none"
-              >
-                Search{" "}
-              </button>{" "}
-            </div>{" "}
+            <div className="mt-4"></div>{" "}
           </div>{" "}
           <table className="w-full mt-6 border-collapse">
             {" "}

@@ -14,6 +14,8 @@ const Login = () => {
   const [user, setUser] = useContext(UserContext);
   const navigate = useNavigate();
 
+  const credentials = userInfo.username && userInfo.password;
+
   const { mutate, isPending } = useMutation({
     mutationKey: ["Login"],
     mutationFn: () => login(userInfo.username, userInfo.password),
@@ -94,7 +96,8 @@ const Login = () => {
             )}
             <button
               type="submit"
-              className="w-full py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none"
+              className={`w-full py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none
+              ${!credentials ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               Login
             </button>

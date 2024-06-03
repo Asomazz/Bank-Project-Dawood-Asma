@@ -12,8 +12,11 @@ const Register = () => {
     image: null,
     password: "",
   });
+
   const [user, setUser] = useContext(UserContext);
   const navigate = useNavigate();
+
+  const credentials = userInfo.username && userInfo.password && userInfo.image;
 
   const handleChange = (e) => {
     if (e.target.name === "image") {
@@ -110,7 +113,9 @@ const Register = () => {
             )}
             <button
               type="submit"
-              className="w-full py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none"
+              className={`w-full py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none ${
+                !credentials ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
               Register
             </button>

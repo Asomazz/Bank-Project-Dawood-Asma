@@ -8,7 +8,7 @@ const AccountPage = () => {
   const [user, setUser] = useContext(UserContext);
   const [balance, setBalance] = useState(0);
   const [isDeposit, setIsDeposit] = useState(true);
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(0);
 
   useEffect(() => {
     const fetchBalance = async () => {
@@ -19,6 +19,8 @@ const AccountPage = () => {
     };
     fetchBalance();
   }, [user]);
+
+  const enterAmountMsg = !amount && isDeposit;
 
   const handleTransaction = async () => {
     const transactionAmount = parseFloat(amount);
@@ -93,21 +95,44 @@ const AccountPage = () => {
             >
               Amount
             </label>
-            <input
-              type="text"
-              id="amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-              placeholder="Amount"
-            />
+            {!isDeposit && !balance ? (
+              <input
+                disabled
+                type="text"
+                id="amount"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                placeholder="Amount"
+              />
+            ) : (
+              <input
+                type="text"
+                id="amount"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                placeholder="Amount"
+              />
+            )}
+            {!(amount > 0) && (
+              <span className="text-xs text-red-500 mt-2 flex justify-start">
+                Please enter a valid amount
+              </span>
+            )}
           </div>
-          <button
-            onClick={handleTransaction}
-            className="w-full py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none"
-          >
-            Submit
-          </button>
+          {!isDeposit && !(balance > amount) ? (
+            <button className="w-full py-2 bg-gray-400 text-white rounded-md focus:outline-none cursor-not-allowed">
+              Submit
+            </button>
+          ) : (
+            <button
+              onClick={handleTransaction}
+              className={`w-full py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none ${
+                !(amount > 0) ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              Submit
+            </button>
+          )}
         </div>
       </main>
       <footer className="bg-white shadow-md py-4">
