@@ -11,6 +11,7 @@ import ProfilePage from "./pages/ProfilePage";
 import UsersPage from "./pages/UsersPage";
 import Transactions from "./pages/Transactions";
 import About from "./pages/About";
+import Navbar from "./components/Navbar";
 
 function App() {
   const [user, setUser] = useState(false);

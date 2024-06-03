@@ -2,16 +2,23 @@ import React, { useContext } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import UserContext from "../context/UserContext";
 import { removeToken } from "../api/storage";
-import logo from "../Pics/Collage_2024-05-29_00_55_17-removebg-preview.png"; // Ensure the path is correct
+import logo from "../Pics/Collage_2024-05-29_00_55_17-removebg-preview.png";
+import { useTranslation } from "react-i18next";
 
 const Navbar = () => {
   const [user, setUser] = useContext(UserContext);
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
   const handleLogout = () => {
     removeToken();
     setUser(false);
     navigate("/");
+  };
+
+  const handleLanguageChange = () => {
+    const newLang = i18n.language === "EN" ? "AR" : "EN";
+    i18n.changeLanguage(newLang);
   };
 
   return (
@@ -23,7 +30,7 @@ const Navbar = () => {
               <img src={logo} alt="Logo" className="h-10 w-auto" />
             </Link>
             <Link to="/" className="ml-2 text-orange-600 text-xl font-semibold">
-              Dasma Bank
+              {t("title")}
             </Link>
           </div>
           <div className="block">
@@ -36,7 +43,7 @@ const Navbar = () => {
                     : "text-gray-700 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium"
                 }
               >
-                Dashboard
+                {t("dashboard")}
               </NavLink>
               <NavLink
                 to="/transactions"
@@ -46,7 +53,7 @@ const Navbar = () => {
                     : "text-gray-700 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium"
                 }
               >
-                Transactions
+                {t("transactions")}
               </NavLink>
               <NavLink
                 to="/usersPage"
@@ -56,7 +63,7 @@ const Navbar = () => {
                     : "text-gray-700 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium"
                 }
               >
-                Users
+                {t("users")}
               </NavLink>
               <NavLink
                 to="/profilePage"
@@ -66,29 +73,43 @@ const Navbar = () => {
                     : "text-gray-700 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium"
                 }
               >
-                Profile
+                {t("profile")}
               </NavLink>
               {user ? (
-                <button
-                  onClick={handleLogout}
-                  className="bg-orange-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-orange-700"
-                >
-                  Logout
-                </button>
+                <>
+                  <button
+                    onClick={handleLogout}
+                    className="bg-orange-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-orange-700"
+                  >
+                    {t("logout")}
+                  </button>
+                  <button
+                    onClick={handleLanguageChange}
+                    className="px-4 py-2 bg-white text-orange-600 border border-orange-600 rounded-lg text-sm"
+                  >
+                    {i18n.language === "EN" ? "AR" : "EN"}
+                  </button>
+                </>
               ) : (
                 <>
                   <NavLink
                     to="/login"
                     className="text-gray-700 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium"
                   >
-                    Login
+                    {t("login")}
                   </NavLink>
                   <NavLink
                     to="/register"
                     className="text-gray-700 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium"
                   >
-                    Register
+                    {t("register")}
                   </NavLink>
+                  <button
+                    onClick={handleLanguageChange}
+                    className="px-4 py-2 bg-white text-orange-600 border border-orange-600 rounded-lg text-sm"
+                  >
+                    {i18n.language === "EN" ? "AR" : "EN"}
+                  </button>
                 </>
               )}
             </div>

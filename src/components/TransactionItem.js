@@ -1,8 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const TransactionItem = ({ transaction }) => {
-  console.log(transaction);
+  const { t } = useTranslation();
   const TinDate = transaction?.createdAt.indexOf("T");
+
   return (
     <tr>
       <td
@@ -17,7 +19,7 @@ const TransactionItem = ({ transaction }) => {
           : `+ ${transaction.amount}`}
       </td>
       <td>{transaction.createdAt.substring(0, TinDate)}</td>
-      <td>{transaction.type}</td>
+      <td>{t(transaction.type)}</td>
     </tr>
   );
 };
