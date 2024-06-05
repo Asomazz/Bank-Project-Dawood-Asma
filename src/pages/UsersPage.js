@@ -20,6 +20,7 @@ const UsersPage = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -65,9 +66,11 @@ const UsersPage = () => {
       setSelectedUser(null);
       setIsModalOpen(false);
       setSearchParams({});
+      setIsProcessing(false);
     },
     onError: (error) => {
       toast.error(error.response?.data?.message || t("transferFailed"));
+      setIsProcessing(false);
     },
   });
 
@@ -76,7 +79,13 @@ const UsersPage = () => {
   };
 
   const handleTransfer = () => {
+    if (parseFloat(transferAmount) > user.balance) {
+      toast.error(t("insufficientFunds"));
+      return;
+    }
+
     if (selectedUser && transferAmount > 0) {
+      setIsProcessing(true);
       transferMutation.mutate({
         amount: transferAmount,
         username: selectedUser.username,
@@ -98,7 +107,7 @@ const UsersPage = () => {
     } else {
       setIsModalOpen(false);
     }
-  }, [user, searchParams]);
+  }, [searchParams]);
 
   useEffect(() => {
     const username = searchParams.get("username");
@@ -131,6 +140,9 @@ const UsersPage = () => {
   };
 
   const queryUsers = users
+    ?.filter(
+      (user, index, self) => self.findIndex((u) => u._id === user._id) === index
+    )
     ?.filter((user) => user.username?.toLowerCase().includes(query))
     .reverse();
 
@@ -154,20 +166,12 @@ const UsersPage = () => {
             <div className="relative flex gap-2">
               <input
                 type="search"
-                className="form-input rounded w-full px-4 py-2 border border-gray-300"
-                placeholder="Enter a username or balance"
+                className="form-input rounded w-full px-4 py-2 border border-orange-300 text-orange-600"
+                placeholder="Enter a Username"
                 onChange={handleSearch}
               />
-              <button
-                onClick={() => {}}
-                className={` w-40 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none ${
-                  !query ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-              >
-                Search
-              </button>
             </div>
-            <h2 className="text-3xl mb-5">Users</h2>
+            <h2 className="text-3xl mb-5 text-orange-600">Users</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {Array.from({ length: 6 }).map((_, index) => (
                 <div key={index}>{renderLoadingSkeleton()}</div>
@@ -218,24 +222,19 @@ const UsersPage = () => {
           <div className="relative flex gap-2">
             <input
               type="search"
-              className="form-input rounded w-full px-4 py-2 border border-gray-300"
-              placeholder="Enter a username or balance"
+              className="form-input rounded w-full px-4 py-2 border border-orange-300 text-orange-600"
+              placeholder={t("susers")}
               onChange={handleSearch}
             />
-            <button
-              className={` w-40 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none ${
-                !query ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-            >
-              Search
-            </button>
           </div>
 
-          <h2 className="text-3xl mb-5">Users</h2>
+          <h2 className="text-3xl mb-5 text-orange-600 font-lively">
+            {t("users")}
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {queryUsers?.map((user) => (
               <div
-                key={user.id}
+                key={user._id}
                 className={`bg-white shadow-md rounded-md p-6 text-center border-2 border-orange-600 `}
               >
                 <img
@@ -253,7 +252,7 @@ const UsersPage = () => {
                   Balance: {user.balance}{" "}
                   <span className="text-orange-600">BTC</span>
                 </p>
-                {user.username !== data.username && (
+                {user.username !== data.username && user._id !== data._id && (
                   <button
                     onClick={() => handleUserClick(user)}
                     className="mt-4 px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none"
@@ -286,12 +285,12 @@ const UsersPage = () => {
                     modal: true,
                   });
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 mb-4 text-orange-600"
+                className="w-full px-3 py-2 border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 mb-4 text-orange-600"
                 placeholder={t("amount")}
                 style={{ appearance: "none" }}
               />
-              {!transferAmount && (
-                <span className="text-xs text-red-500 mt-2 flex justify-start ">
+              {transferAmount && !parseFloat(transferAmount) && (
+                <span className="text-xs text-red-500 mt-2 flex justify-start">
                   Please enter a valid amount
                 </span>
               )}
@@ -299,10 +298,35 @@ const UsersPage = () => {
               <button
                 onClick={handleTransfer}
                 className={`w-full py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none ${
-                  !transferAmount ? "opacity-50 cursor-not-allowed" : ""
+                  isProcessing ? "opacity-50 cursor-not-allowed" : ""
                 }`}
+                disabled={isProcessing}
               >
-                {t("transfer")}
+                {isProcessing ? (
+                  <span>
+                    <svg
+                      className="animate-spin h-5 w-5 mr-3 inline-block"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      ></path>
+                    </svg>
+                    Transferring...
+                  </span>
+                ) : (
+                  t("transfer")
+                )}
               </button>
               <button
                 onClick={closeModal}

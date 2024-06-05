@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import Navbar from "../components/Navbar";
 import UserContext from "../context/UserContext";
 import { getProfile, updateProfile } from "../api/auth";
@@ -13,25 +12,20 @@ const ProfilePage = () => {
   const [profile, setProfile] = useState({});
   const [profileImage, setProfileImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+  const [originalImage, setOriginalImage] = useState(null);
   const fileInputRef = React.createRef();
   const { t } = useTranslation();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const { data: profileData, refetch } = useQuery({
-    queryKey: ["profile", user],
-    queryFn: () => getProfile(user),
-  });
 
   useEffect(() => {
-    if (profileData) {
-      setProfile(profileData);
-      setPreviewImage(
-        profileData.image
-          ? `https://react-bank-project.eapi.joincoded.com/${profileData.image}`
-          : null
-      );
-    }
-  }, [profileData]);
+    const fetchProfile = async () => {
+      if (user) {
+        const profileData = await getProfile(user);
+        setProfile(profileData);
+        setOriginalImage(profileData.image);
+      }
+    };
+    fetchProfile();
+  }, [user]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -41,43 +35,26 @@ const ProfilePage = () => {
 
   const handleClear = () => {
     setProfileImage(null);
-    setPreviewImage(
-      profile.image
-        ? `https://react-bank-project.eapi.joincoded.com/${profile.image}`
-        : null
-    );
+    setPreviewImage(null);
     fileInputRef.current.value = null;
   };
 
-  const updateProfileMutation = useMutation({
-    mutationFn: (formData) => updateProfile(formData, user),
-    onSuccess: async (updatedUser) => {
-      setUser(updatedUser);
-      setProfile(updatedUser);
-      setProfileImage(null);
-      setPreviewImage(
-        updatedUser.image
-          ? `https://react-bank-project.eapi.joincoded.com/${updatedUser.image}`
-          : null
-      );
-      handleClear();
-      toast.success(t("profileUpdated"));
-      refetch();
-    },
-    onError: () => {
-      toast.error(t("updateFailed"));
-    },
-    onSettled: () => {
-      setIsSubmitting(false);
-    },
-  });
-
-  const handleSave = async () => {
+  const handleSave = () => {
     if (profileImage) {
-      setIsSubmitting(true);
       const formData = new FormData();
       formData.append("image", profileImage);
-      updateProfileMutation.mutate(formData);
+
+      updateProfile(formData, user)
+        .then((updatedUser) => {
+          setUser(updatedUser);
+          setProfile(updatedUser);
+          setOriginalImage(updatedUser.image);
+          handleClear();
+          toast.success(t("profileUpdated"));
+        })
+        .catch(() => {
+          toast.error(t("updateFailed"));
+        });
     }
   };
 
@@ -90,6 +67,14 @@ const ProfilePage = () => {
             <img
               src={previewImage}
               alt="Profile Preview"
+              className="w-48 h-48 rounded-full mx-auto mb-4"
+            />
+          ) : profile.image ? (
+            <img
+              src={
+                "https://react-bank-project.eapi.joincoded.com/" + profile.image
+              }
+              alt="Profile"
               className="w-48 h-48 rounded-full mx-auto mb-4"
             />
           ) : (
@@ -111,44 +96,20 @@ const ProfilePage = () => {
               className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-600 hover:file:bg-orange-100"
             />
           </div>
-          <div className="mt-4 flex justify-between space-x-2">
+          <div className="mt-4 flex justify-between">
             <button
               onClick={handleSave}
-              className={`mt-4 w-full py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none flex items-center justify-center ${
-                !profileImage ? "opacity-50 cursor-not-allowed" : ""
+              className={`w-full py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none mr-2 ${
+                !previewImage ? "opacity-50 cursor-not-allowed" : ""
               }`}
-              disabled={!profileImage || isSubmitting}
+              disabled={!previewImage}
             >
-              {isSubmitting ? (
-                <>
-                  <svg
-                    className="animate-spin h-5 w-5 mr-3 text-white"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8v8H4zm2 5.292A7.962 7.962 0 014 12h2c0 1.105.289 2.145.812 3.071l-1.562 2.221z"
-                    ></path>
-                  </svg>
-                  {t("processing")}
-                </>
-              ) : (
-                t("save")
-              )}
+              {t("save")}
             </button>
             {previewImage && (
               <button
                 onClick={handleClear}
-                className="mt-4 w-full py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none ml-2"
+                className="w-full py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none ml-2"
               >
                 {t("clear")}
               </button>

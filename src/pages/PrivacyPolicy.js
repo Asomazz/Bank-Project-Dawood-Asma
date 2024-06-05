@@ -3,10 +3,9 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import UserContext from "../context/UserContext";
 import Navbar from "../components/Navbar";
-import aboutImage from "../Pics/Capture.PNG";
 import logo from "../Pics/Collage_2024-05-29_00_55_17-removebg-preview.png";
 
-const About = () => {
+const PrivacyPolicy = () => {
   const { t, i18n } = useTranslation();
   const [user, setUser] = useContext(UserContext);
   const [language, setLanguage] = useState(i18n.language);
@@ -78,22 +77,42 @@ const About = () => {
 
       <main className="flex flex-col items-center justify-center flex-grow p-6">
         <div className="text-center mb-8">
-          <img
-            src={aboutImage}
-            alt="About Us"
-            className="w-64 h-64 rounded-full mx-auto mb-4 shadow-lg"
-          />
-          <h1 className="text-4xl font-bold text-orange-600 mb-4">About Us</h1>
+          <h1 className="text-4xl font-bold text-orange-600 mb-4">
+            Privacy Policy
+          </h1>
           <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-            Dasma Bank is the brainchild of two passionate full stack
-            developers, Dawood and Asmaa. Together, they have built this bank
-            from the ground up with the vision of revolutionizing online
-            banking. Their expertise in coding is unmatched, and they are on a
-            mission to surpass Ali Alsarraf in the world of software
-            development. With their combined skills, Dawood and Asmaa are
-            dedicated to providing top-notch banking solutions that cater to the
-            modern needs of their users. Join us on this journey and experience
-            the future of banking.
+            Your privacy is important to us. This privacy policy explains how we
+            collect, use, and protect your information.
+          </p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-md max-w-3xl w-full">
+          <h2 className="text-2xl font-semibold text-orange-600 mb-4">
+            Information Collection
+          </h2>
+          <p className="text-gray-700 mb-4">
+            We collect information that you provide to us directly, such as when
+            you create an account, make a transaction, or contact us for
+            support. This may include your name, email address, phone number,
+            and financial information.
+          </p>
+          <h2 className="text-2xl font-semibold text-orange-600 mb-4">
+            Use of Information
+          </h2>
+          <p className="text-gray-700 mb-4">
+            The information we collect is used to provide and improve our
+            services, process transactions, communicate with you, and ensure the
+            security of our platform. We may also use your information for
+            marketing purposes, with your consent.
+          </p>
+          <h2 className="text-2xl font-semibold text-orange-600 mb-4">
+            Data Protection
+          </h2>
+          <p className="text-gray-700">
+            We implement robust security measures to protect your data from
+            unauthorized access, disclosure, alteration, or destruction. Our
+            data protection practices comply with applicable laws and
+            regulations to ensure your information is handled with the utmost
+            care.
           </p>
         </div>
       </main>
@@ -124,4 +143,4 @@ const About = () => {
   );
 };
 
-export default About;
+export default PrivacyPolicy;

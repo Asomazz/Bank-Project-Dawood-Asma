@@ -3,10 +3,9 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import UserContext from "../context/UserContext";
 import Navbar from "../components/Navbar";
-import aboutImage from "../Pics/Capture.PNG";
 import logo from "../Pics/Collage_2024-05-29_00_55_17-removebg-preview.png";
 
-const About = () => {
+const Licensing = () => {
   const { t, i18n } = useTranslation();
   const [user, setUser] = useContext(UserContext);
   const [language, setLanguage] = useState(i18n.language);
@@ -78,22 +77,49 @@ const About = () => {
 
       <main className="flex flex-col items-center justify-center flex-grow p-6">
         <div className="text-center mb-8">
-          <img
-            src={aboutImage}
-            alt="About Us"
-            className="w-64 h-64 rounded-full mx-auto mb-4 shadow-lg"
-          />
-          <h1 className="text-4xl font-bold text-orange-600 mb-4">About Us</h1>
+          <h1 className="text-4xl font-bold text-orange-600 mb-4">Licensing</h1>
           <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-            Dasma Bank is the brainchild of two passionate full stack
-            developers, Dawood and Asmaa. Together, they have built this bank
-            from the ground up with the vision of revolutionizing online
-            banking. Their expertise in coding is unmatched, and they are on a
-            mission to surpass Ali Alsarraf in the world of software
-            development. With their combined skills, Dawood and Asmaa are
-            dedicated to providing top-notch banking solutions that cater to the
-            modern needs of their users. Join us on this journey and experience
-            the future of banking.
+            Welcome to the licensing section of Dasma Bank. Here, you can find
+            all the necessary information regarding the licensing of our
+            services and products.
+          </p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-md max-w-3xl w-full">
+          <h2 className="text-2xl font-semibold text-orange-600 mb-4">
+            Our Licensing Policy
+          </h2>
+          <p className="text-gray-700 mb-4">
+            At Dasma Bank, we are committed to providing transparent and
+            accessible financial services. Our licensing policies ensure that
+            our operations comply with international financial regulations and
+            standards.
+          </p>
+          <h3 className="text-xl font-semibold text-orange-600 mb-2">
+            Financial Services License
+          </h3>
+          <p className="text-gray-700 mb-4">
+            Dasma Bank operates under a comprehensive financial services license
+            granted by the Financial Regulatory Authority (FRA). This license
+            authorizes us to provide a wide range of banking services including
+            savings accounts, loans, and digital payments.
+          </p>
+          <h3 className="text-xl font-semibold text-orange-600 mb-2">
+            Data Protection and Privacy
+          </h3>
+          <p className="text-gray-700 mb-4">
+            We take data protection seriously. Dasma Bank complies with the
+            General Data Protection Regulation (GDPR) to ensure that all client
+            information is handled securely and confidentially. Our privacy
+            policies are designed to protect your data and respect your privacy.
+          </p>
+          <h3 className="text-xl font-semibold text-orange-600 mb-2">
+            Consumer Protection
+          </h3>
+          <p className="text-gray-700 mb-4">
+            Consumer protection is a cornerstone of our licensing policy. We are
+            committed to fair and ethical practices in all our dealings with
+            clients. Our services are designed to be transparent, with clear
+            terms and conditions, and no hidden fees.
           </p>
         </div>
       </main>
@@ -124,4 +150,4 @@ const About = () => {
   );
 };
 
-export default About;
+export default Licensing;

@@ -1,5 +1,6 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  darkMode: "class", // Enable dark mode support
   theme: {
     extend: {
       animation: {
@@ -85,6 +86,9 @@ module.exports = {
       colors: {
         primary: "#ff005d",
         secondary: "#12000a",
+        darkBg: "#121212",
+        darkText: "#e0e0e0",
+        darkAccent: "#ff4081",
       },
       fontFamily: {
         audiowide: ["Audiowide", "sans-serif"],

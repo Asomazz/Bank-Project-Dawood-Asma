@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import UserContext from "../context/UserContext";
 import { deposit, withdraw, getProfile } from "../api/auth";
@@ -12,8 +13,33 @@ const AccountPage = () => {
   const [user, setUser] = useContext(UserContext);
   const [balance, setBalance] = useState(0);
   const [isDeposit, setIsDeposit] = useState(true);
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const amountParam = params.get("amount");
+    const depositParam = params.get("deposit");
+
+    if (amountParam) {
+      setAmount(amountParam);
+    }
+    if (depositParam !== null) {
+      setIsDeposit(depositParam === "true");
+    }
+  }, [location.search]);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (amount) {
+      params.set("amount", amount);
+    }
+    params.set("deposit", isDeposit);
+    navigate({ search: params.toString() });
+  }, [amount, isDeposit, navigate]);
 
   useEffect(() => {
     const fetchBalance = async () => {
@@ -24,8 +50,6 @@ const AccountPage = () => {
     };
     fetchBalance();
   }, [user]);
-
-  const enterAmountMsg = !amount && isDeposit;
 
   const handleTransaction = async () => {
     const transactionAmount = parseFloat(amount);
@@ -102,7 +126,7 @@ const AccountPage = () => {
               htmlFor="amount"
               className="block text-sm font-medium text-gray-700"
             >
-              Amount
+              {t("amount")}
             </label>
             {!isDeposit && !balance ? (
               <input
@@ -110,7 +134,7 @@ const AccountPage = () => {
                 type="text"
                 id="amount"
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                placeholder="Amount"
+                placeholder={t("amount")}
               />
             ) : (
               <input
@@ -118,13 +142,13 @@ const AccountPage = () => {
                 id="amount"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                placeholder="Amount"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm text-orange-600"
+                placeholder={t("amount")}
               />
             )}
-            {!(amount > 0) && (
+            {amount && !(amount > 0) && (
               <span className="text-xs text-red-500 mt-2 flex justify-start">
-                Please enter a valid amount
+                {t("pleaseEnterValidAmount")}
               </span>
             )}
           </div>
@@ -155,10 +179,10 @@ const AccountPage = () => {
                     d="M4 12a8 8 0 018-8v8H4zm2 5.292A7.962 7.962 0 014 12h2c0 1.105.289 2.145.812 3.071l-1.562 2.221z"
                   ></path>
                 </svg>
-                Processing...
+                {t("submitting")}
               </>
             ) : (
-              "Submit"
+              t("submit")
             )}
           </button>
         </div>

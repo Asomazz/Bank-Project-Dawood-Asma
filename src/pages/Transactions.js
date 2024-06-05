@@ -27,8 +27,9 @@ const Transactions = () => {
     queryParams.get("toDate") ? new Date(queryParams.get("toDate")) : null
   );
   const [searchQuery, setSearchQuery] = useState(query);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { data: transactions } = useQuery({
+  const { data: transactions, error } = useQuery({
     queryKey: ["transactions"],
     queryFn: getAllTransactions,
   });
@@ -62,7 +63,16 @@ const Transactions = () => {
   };
 
   const handleSearchClick = () => {
+    const transactionAmount = parseFloat(searchQuery);
+
+    if (isNaN(transactionAmount) || transactionAmount <= 0) {
+      toast.error(t("pleaseEnterValidAmount"));
+      return;
+    }
+
+    setIsSubmitting(true);
     setQuery(searchQuery);
+    setIsSubmitting(false);
     toast.info(t("search"));
   };
 
@@ -112,7 +122,7 @@ const Transactions = () => {
         <span className="text-gray-600">
           {formatDate(transaction.createdAt)}
         </span>
-        <span className="text-gray-600 capitalize">{transaction.type}</span>
+        <span className="text-gray-600 capitalize">{t(transaction.type)}</span>
       </div>
     </div>
   ));
@@ -136,10 +146,40 @@ const Transactions = () => {
                 className={` w-40 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none ${
                   !searchQuery ? "opacity-50 cursor-not-allowed" : ""
                 }`}
+                disabled={isSubmitting}
               >
-                {t("search")}
+                {isSubmitting ? (
+                  <>
+                    <svg
+                      className="animate-spin h-5 w-5 mr-3 text-white"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8H4zm2 5.292A7.962 7.962 0 014 12h2c0 1.105.289 2.145.812 3.071l-1.562 2.221z"
+                      ></path>
+                    </svg>
+                    {t("submitting")}
+                  </>
+                ) : (
+                  t("search")
+                )}
               </button>
             </div>
+            {!searchQuery || !isNaN(parseFloat(searchQuery)) ? null : (
+              <span className="text-xs text-red-500 mt-2 flex justify-start">
+                {t("pleaseEnterValidAmount")}
+              </span>
+            )}
             <div className="flex space-x-4 items-center">
               <span className="text-gray-700">{t("filter")}</span>
               <label className="flex items-center">
@@ -220,7 +260,11 @@ const Transactions = () => {
             <div className="mt-4"></div>
           </div>
           <div className="mt-6">
-            {transactionList && transactionList.length > 0 ? (
+            {error ? (
+              <div className="text-center py-4 text-red-500">
+                {t("errorFetchingTransactions")}
+              </div>
+            ) : transactionList && transactionList.length > 0 ? (
               transactionList
             ) : (
               <div className="text-center py-4">{t("noTransactions")}</div>

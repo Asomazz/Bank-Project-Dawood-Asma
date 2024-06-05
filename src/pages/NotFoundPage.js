@@ -16,7 +16,6 @@ const NotFoundPage = () => {
   };
 
   const logout = () => {
-    alert("Logging out...");
     localStorage.removeItem("token");
     setUser(false);
   };

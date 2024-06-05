@@ -12,6 +12,9 @@ import UsersPage from "./pages/UsersPage";
 import Transactions from "./pages/Transactions";
 import About from "./pages/About";
 import Navbar from "./components/Navbar";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Contact from "./pages/Contact";
+import Licensing from "./pages/Licensing";
 
 function App() {
   const [user, setUser] = useState(false);
@@ -25,6 +28,9 @@ function App() {
         <Routes>
           <Route path="/" Component={Home} />
           <Route path="/about" Component={About} />
+          <Route path="/privacy" Component={PrivacyPolicy} />
+          <Route path="/contact" Component={Contact} />
+          <Route path="/licensing" Component={Licensing} />
 
           {user && (
             <>
